@@ -1,0 +1,28 @@
+A* algorithm rest api
+
+--- PRACTICAL APPLICATION ---
+
+URI = [{url}/api/v1/{nodeset_name}/]
+GET -> get information about an exsisting nodeset [URI/{nodeset_name}]
+GET -> get list of nodes that represent the shortest path between them [URI/{nodeset_name}/path/{from_uuid}/{to_uuid}]
+GET -> get node closest to given position [URI/{nodeset_name}/node/{position}]
+
+--- NODESET ---
+
+###Create a new nodeset
+URI = [{url}/api/v1/nodeset]
+
+POST -> create nodeset
+GET -> get information about an exsisting nodeset [URI/{nodeset_name}]
+GET -> get information about all nodesets [URI/]
+PUT -> change nodeset information [URI/{nodeset_name}]
+DELETE -> delete nodeset [URI/{nodeset_name}]
+
+
+###Nested endpoint
+URI = [{url}/api/v1/nodeset/{nodeset_name}/node]
+
+POST -> add node
+GET -> get node [URI/{node_uuid}]
+PUT -> alter node [URI/{node_uuid}]
+DELETE -> delete node [URI/{node_uuid}]
