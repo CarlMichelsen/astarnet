@@ -2,6 +2,6 @@ namespace Dto.Models;
 
 public struct PathRequestDto
 {
-    public string StartNodeGuid { get; set; }
-    public string EndNodeGuid { get; set; }
+    public Guid StartNodeGuid { get; set; }
+    public Guid EndNodeGuid { get; set; }
 }

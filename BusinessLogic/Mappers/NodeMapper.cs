@@ -11,7 +11,7 @@ public static class NodeMapper
         return new NodesetDto
         {
             Name = nodeset.Name,
-            Nodes = nodeset.Nodes.ToDictionary(x => x.Key.ToString(), x => NodeToDto(x.Value))
+            Nodes = nodeset.Nodes.ToDictionary(x => x.Key, x => NodeToDto(x.Value))
         };
     }
 
@@ -19,19 +19,20 @@ public static class NodeMapper
     {
         return new NodeDto
         {
-            Id = string.IsNullOrWhiteSpace(node.Id.ToString()) ? string.Empty : node.Id.ToString(),
+            Id = node.Id == Guid.Empty ? Guid.Empty : node.Id,
             Position = VectorToDto(node.Position),
-            Links = node.Links.Select(x => x.ToString())
+            Links = node.Links
         };
     }
 
-    public static List<float> VectorToDto(Vector vec)
+    public static VectorDto VectorToDto(Vector vec)
     {
-        return new List<float> {
-                vec.X,
-                vec.Y,
-                vec.Z
-            };
+        return new VectorDto
+        {
+            X = vec.X,
+            Y = vec.Y,
+            Z = vec.Z
+        };
     }
 
     public static Nodeset DtoToNodeset(NodesetDto nodeset)
@@ -39,7 +40,7 @@ public static class NodeMapper
         return new Nodeset
         {
             Name = nodeset.Name,
-            Nodes = nodeset.Nodes.ToDictionary(x => Guid.Parse(x.Key), x => DtoToNode(x.Value))
+            Nodes = nodeset.Nodes.ToDictionary(x => x.Key, x => DtoToNode(x.Value))
         };
     }
 
@@ -47,19 +48,19 @@ public static class NodeMapper
     {
         return new Node
         {
-            Id = string.IsNullOrWhiteSpace(node.Id) ? Guid.NewGuid() : Guid.Parse(node.Id),
-            Position = DtoToVector(node.Position.ToList()),
-            Links = node.Links.Select(Guid.Parse).ToList()
+            Id = node.Id == Guid.Empty ? Guid.NewGuid() : node.Id,
+            Position = DtoToVector(node.Position),
+            Links = node.Links.ToList()
         };
     }
 
-    public static Vector DtoToVector(List<float> vec)
+    public static Vector DtoToVector(VectorDto vec)
     {
         return new Vector
         {
-            X = vec[0],
-            Y = vec[1],
-            Z = vec[2]
+            X = vec.X,
+            Y = vec.Y,
+            Z = vec.Z
         };
     }
 }

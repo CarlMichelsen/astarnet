@@ -1,6 +1,5 @@
 using BusinessLogic.Mappers;
 using Api.Handlers.Interface;
-using Api.Extensions;
 using Database.Repositories.Interface;
 using Database.Entities;
 using Dto;
@@ -18,17 +17,14 @@ public class NodeHandler : INodeHandler
         this.nodeRepository = nodeRepository;
     }
 
-    public async Task<ServiceResponse<NodeDto>> GetNode(string name, string guid)
+    public async Task<ServiceResponse<NodeDto>> GetNode(string name, Guid node)
     {
-        var parsed = Guid.TryParse(guid, out Guid validGuid);
-        if (!parsed) return ServiceResponse<NodeDto>.NotOk("failed to parse guid");
-
-        var node = await nodeRepository.GetNode(name, validGuid);
-        if (node is null) return ServiceResponse<NodeDto>.NotOk("node not found");
+        var nodeObject = await nodeRepository.GetNode(name, node);
+        if (nodeObject is null) return ServiceResponse<NodeDto>.NotOk("node not found");
 
         return new ServiceResponse<NodeDto>
         {
-            Data = NodeMapper.NodeToDto(node),
+            Data = NodeMapper.NodeToDto(nodeObject),
         };
     }
 
@@ -41,12 +37,9 @@ public class NodeHandler : INodeHandler
         };
     }
 
-    public async Task<ServiceResponse<IEnumerable<NodeDto>>> GetNodes(string name, IEnumerable<string> guids)
+    public async Task<ServiceResponse<IEnumerable<NodeDto>>> GetNodes(string name, IEnumerable<Guid> guids)
     {
-        var parsed = guids.TryParseGuid(out IEnumerable<Guid> validGuids);
-        if (!parsed) return ServiceResponse<IEnumerable<NodeDto>>.NotOk("failed to parse one or more guids");
-
-        var nodes = await nodeRepository.GetNodes(name, validGuids);
+        var nodes = await nodeRepository.GetNodes(name, guids);
         return new ServiceResponse<IEnumerable<NodeDto>>
         {
             Data = nodes.Select(NodeMapper.NodeToDto),
@@ -65,70 +58,49 @@ public class NodeHandler : INodeHandler
         };
     }
 
-    public async Task<ServiceResponse<bool>> EditNodePosition(string nodesetName, string guid, IEnumerable<float> position)
+    public async Task<ServiceResponse<bool>> EditNodePosition(string nodesetName, Guid node, VectorDto position)
     {
-        var isGuidParsed = Guid.TryParse(guid, out Guid validGuid);
-        if (!isGuidParsed) return ServiceResponse<bool>.NotOk("failed to parse guid");
-
         var positionParsed = TryParseVector(position, out Vector? validPosition);
         if (!positionParsed) return ServiceResponse<bool>.NotOk("failed to parse position");
 
         return new ServiceResponse<bool>
         {
-            Data = await nodeRepository.EditNodePosition(nodesetName, validGuid, validPosition!)
+            Data = await nodeRepository.EditNodePosition(nodesetName, node, validPosition!)
         };
     }
 
-    public async Task<ServiceResponse<bool>> EditNodeLinks(string nodesetName, string guid, IEnumerable<string> links)
+    public async Task<ServiceResponse<bool>> EditNodeLinks(string nodesetName, Guid node, IEnumerable<Guid> links)
     {
-        var isGuidParsed = Guid.TryParse(guid, out Guid validGuid);
-        if (!isGuidParsed) return ServiceResponse<bool>.NotOk("failed to parse guid");
-
-        var guidsAreParsed = links.TryParseGuid(out IEnumerable<Guid> validLinkGuids);
-        if (!guidsAreParsed) return ServiceResponse<bool>.NotOk("failed to parse one or more link guids");
-
         return new ServiceResponse<bool>
         {
-            Data = await nodeRepository.EditNodeLinks(nodesetName, validGuid, validLinkGuids)
+            Data = await nodeRepository.EditNodeLinks(nodesetName, node, links)
         };
     }
 
     public async Task<ServiceResponse<bool>> EditNode(string nodesetName, NodeDto nodeDto)
     {
-        var isGuidParsed = Guid.TryParse(nodeDto.Id, out Guid validGuid);
-        if (!isGuidParsed) return ServiceResponse<bool>.NotOk("failed to parse id guid");
-
-        var guidsAreParsed = nodeDto.Links.TryParseGuid(out IEnumerable<Guid> validLinkGuids);
-        if (!guidsAreParsed) return ServiceResponse<bool>.NotOk("failed to parse one or more link guids");
-
         var positionParsed = TryParseVector(nodeDto.Position, out Vector? validPosition);
         if (!positionParsed) return ServiceResponse<bool>.NotOk("failed to parse position");
 
         return new ServiceResponse<bool>
         {
-            Data = await nodeRepository.EditNode(nodesetName, validGuid, validPosition!, validLinkGuids)
+            Data = await nodeRepository.EditNode(nodesetName, nodeDto.Id, validPosition!, nodeDto.Links)
         };
     }
 
-    public async Task<ServiceResponse<bool>> DeleteNode(string nodesetName, string guid)
+    public async Task<ServiceResponse<bool>> DeleteNode(string nodesetName, Guid node)
     {
-        var isGuidParsed = Guid.TryParse(guid, out Guid validGuid);
-        if (!isGuidParsed) return ServiceResponse<bool>.NotOk("failed to parse guid");
-
         return new ServiceResponse<bool>
         {
-            Data = await nodeRepository.DeleteNode(nodesetName, validGuid)
+            Data = await nodeRepository.DeleteNode(nodesetName, node)
         };
     }
 
-    public async Task<ServiceResponse<int>> DeleteNodes(string nodesetName, IEnumerable<string> guids)
+    public async Task<ServiceResponse<int>> DeleteNodes(string nodesetName, IEnumerable<Guid> guids)
     {
-        var guidsAreParsed = guids.TryParseGuid(out IEnumerable<Guid> validLinkGuids);
-        if (!guidsAreParsed) return ServiceResponse<int>.NotOk("failed to parse one or more guids");
-
         return new ServiceResponse<int>
         {
-            Data = await nodeRepository.DeleteNodes(nodesetName, validLinkGuids)
+            Data = await nodeRepository.DeleteNodes(nodesetName, guids)
         };
     }
 
@@ -146,13 +118,13 @@ public class NodeHandler : INodeHandler
         }
     }
 
-    private static bool TryParseVector(IEnumerable<float> vectorDto, out Vector? vector)
+    private static bool TryParseVector(VectorDto vectorDto, out Vector? vector)
     {
         vector = default;
 
         try
         {
-            vector = NodeMapper.DtoToVector(vectorDto.ToList());
+            vector = NodeMapper.DtoToVector(vectorDto);
             return true;
         }
         catch (Exception)
