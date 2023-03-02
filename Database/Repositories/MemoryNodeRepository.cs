@@ -1,81 +1,123 @@
 using Database.Entities;
 using Database.Repositories.Interface;
-using Dto.Models;
 
 namespace Database.Repositories;
 
 public class MemoryNodeRepository : INodeRepository
 {
-    public IEnumerable<Node> CreateNodes(Nodeset nodeset, IEnumerable<NodeDto> nodes)
+    private readonly MemoryDatabase database;
+
+    public MemoryNodeRepository(MemoryDatabase database)
     {
+        this.database = database;
+    }
+
+    public async Task<IEnumerable<Node>> CreateNodes(string nodesetName, IEnumerable<Node> nodes)
+    {
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+
         var added = new List<Node>();
-        foreach (var nodeDto in nodes)
+        if (!found) return added;
+
+        foreach (var node in nodes)
         {
-            var positionList = nodeDto.Position.ToList();
             var newNode = new Node
             {
-                Id = string.IsNullOrWhiteSpace(nodeDto.Id) ? Guid.NewGuid() : Guid.Parse(nodeDto.Id),
-                Position = new Vector { X = positionList[0], Y = positionList[1], Z = positionList[2] },
-                Links = nodeDto.Links.Select(Guid.Parse).ToList()
+                Id = node.Id == Guid.Empty ? Guid.NewGuid() : node.Id,
+                Position = node.Position,
+                Links = node.Links
             };
-            var successfulAdd = nodeset.Nodes.TryAdd(newNode.Id, newNode);
+            var successfulAdd = nodeset!.Nodes.TryAdd(newNode.Id, newNode);
             if (successfulAdd) added.Add(newNode);
         }
         return added;
     }
 
-    public bool DeleteNode(Nodeset nodeset, Guid guid)
+    public async Task<bool> DeleteNode(string nodesetName, Guid guid)
     {
-        return nodeset.Nodes.Remove(guid);
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return false;
+        return nodeset!.Nodes.Remove(guid);
     }
 
-    public int DeleteNodes(Nodeset nodeset, IEnumerable<Guid> guids)
+    public async Task<int> DeleteNodes(string nodesetName, IEnumerable<Guid> guids)
     {
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return 0;
+
         var deleted = 0;
         foreach (var guid in guids)
         {
-            if (nodeset.Nodes.Remove(guid)) deleted++;
+            if (nodeset!.Nodes.Remove(guid)) deleted++;
         }
         return deleted;
     }
 
-    public bool EditNode(Nodeset nodeset, Guid guid, Vector position, IEnumerable<Guid> links)
+    public async Task<bool> EditNode(string nodesetName, Guid guid, Vector position, IEnumerable<Guid> links)
     {
-        var found = nodeset.Nodes.TryGetValue(guid, out Node? node);
-        if (found)
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return false;
+
+        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
+        if (foundNode)
         {
             node!.Position = position;
             node!.Links = links.ToList();
         }
-        return found;
+        return foundNode;
     }
 
-    public bool EditNodeLinks(Nodeset nodeset, Guid guid, IEnumerable<Guid> links)
+    public async Task<bool> EditNodeLinks(string nodesetName, Guid guid, IEnumerable<Guid> links)
     {
-        var found = nodeset.Nodes.TryGetValue(guid, out Node? node);
-        if (found) node!.Links = links.ToList();
-        return found;
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return false;
+
+        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
+        if (foundNode) node!.Links = links.ToList();
+        return foundNode;
     }
 
-    public bool EditNodePosition(Nodeset nodeset, Guid guid, Vector position)
+    public async Task<bool> EditNodePosition(string nodesetName, Guid guid, Vector position)
     {
-        var found = nodeset.Nodes.TryGetValue(guid, out Node? node);
-        if (found) node!.Position = position;
-        return found;
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return false;
+
+        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
+        if (foundNode) node!.Position = position;
+        return foundNode;
     }
 
-    public Node? GetNode(Nodeset nodeset, Guid guid)
+    public Task<IEnumerable<Node>> GetAllNodes(string nodesetName)
     {
-        return nodeset.Nodes.GetValueOrDefault(guid);
+        throw new NotImplementedException();
     }
 
-    public IEnumerable<Node> GetNodes(Nodeset nodeset, IEnumerable<Guid> guids)
+    public async Task<Node?> GetNode(string nodesetName, Guid guid)
     {
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return default;
+
+        return nodeset!.Nodes.GetValueOrDefault(guid);
+    }
+
+    public async Task<IEnumerable<Node>> GetNodes(string nodesetName, IEnumerable<Guid> guids)
+    {
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
         var nodes = new List<Node>();
+        if (!found) return nodes;
+
         foreach (var guid in guids)
         {
-            var found = nodeset.Nodes.TryGetValue(guid, out Node? node);
-            if (found) nodes.Add(node!);
+            var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
+            if (foundNode) nodes.Add(node!);
         }
         return nodes;
     }

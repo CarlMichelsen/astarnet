@@ -1,6 +1,7 @@
 using Api;
 using Api.Handlers;
 using Api.Handlers.Interface;
+using Api.Middleware;
 using Database;
 using Database.Repositories;
 using Database.Repositories.Interface;
@@ -10,12 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddTransient<INodesetHandler, NodesetHandler>()
+    .AddTransient<INodeHandler, NodeHandler>()
     .AddTransient<INodesetRepository, MemoryNodesetRepository>()
-    .AddTransient<INodeRepository, MemoryNodeRepository>()
-    .AddTransient<INodeRepository, MemoryNodeRepository>()
-    .AddTransient<ExceptionFilter>();
+    .AddTransient<INodeRepository, MemoryNodeRepository>();
 
+// Exception Interceptor
+builder.Services.AddTransient<ExceptionFilter>();
+
+// Database
 builder.Services.AddSingleton<MemoryDatabase>();
+
+// Middleware
+builder.Services.AddTransient<RootMiddleware>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,6 +37,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<RootMiddleware>();
 
 //app.UseHttpsRedirection();
 

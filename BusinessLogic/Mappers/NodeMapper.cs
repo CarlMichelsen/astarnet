@@ -33,4 +33,33 @@ public static class NodeMapper
                 vec.Z
             };
     }
+
+    public static Nodeset DtoToNodeset(NodesetDto nodeset)
+    {
+        return new Nodeset
+        {
+            Name = nodeset.Name,
+            Nodes = nodeset.Nodes.ToDictionary(x => Guid.Parse(x.Key), x => DtoToNode(x.Value))
+        };
+    }
+
+    public static Node DtoToNode(NodeDto node)
+    {
+        return new Node
+        {
+            Id = string.IsNullOrWhiteSpace(node.Id) ? Guid.NewGuid() : Guid.Parse(node.Id),
+            Position = DtoToVector(node.Position.ToList()),
+            Links = node.Links.Select(Guid.Parse).ToList()
+        };
+    }
+
+    public static Vector DtoToVector(List<float> vec)
+    {
+        return new Vector
+        {
+            X = vec[0],
+            Y = vec[1],
+            Z = vec[2]
+        };
+    }
 }

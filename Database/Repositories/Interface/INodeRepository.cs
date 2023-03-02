@@ -1,16 +1,16 @@
 using Database.Entities;
-using Dto.Models;
 
 namespace Database.Repositories.Interface;
 
 public interface INodeRepository
 {
-    IEnumerable<Node> CreateNodes(Nodeset nodeset, IEnumerable<NodeDto> nodes);
-    bool EditNodePosition(Nodeset nodeset, Guid guid, Vector position);
-    bool EditNodeLinks(Nodeset nodeset, Guid guid, IEnumerable<Guid> links);
-    bool EditNode(Nodeset nodeset, Guid guid, Vector position, IEnumerable<Guid> links);
-    Node? GetNode(Nodeset nodeset, Guid guid);
-    IEnumerable<Node> GetNodes(Nodeset nodeset, IEnumerable<Guid> guids);
-    bool DeleteNode(Nodeset nodeset, Guid guid);
-    int DeleteNodes(Nodeset nodeset, IEnumerable<Guid> guids);
+    Task<IEnumerable<Node>> CreateNodes(string nodesetName, IEnumerable<Node> nodes);
+    Task<bool> EditNodePosition(string nodesetName, Guid guid, Vector position);
+    Task<bool> EditNodeLinks(string nodesetName, Guid guid, IEnumerable<Guid> links);
+    Task<bool> EditNode(string nodesetName, Guid guid, Vector position, IEnumerable<Guid> links);
+    Task<Node?> GetNode(string nodesetName, Guid guid);
+    Task<IEnumerable<Node>> GetNodes(string nodesetName, IEnumerable<Guid> guids);
+    Task<IEnumerable<Node>> GetAllNodes(string nodesetName);
+    Task<bool> DeleteNode(string nodesetName, Guid guid);
+    Task<int> DeleteNodes(string nodesetName, IEnumerable<Guid> guids);
 }
