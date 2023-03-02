@@ -1,14 +1,17 @@
-using Api;
+using Api.Configuration;
 using Api.Handlers;
 using Api.Handlers.Interface;
 using Api.Middleware;
 using Database;
 using Database.Repositories;
 using Database.Repositories.Interface;
+using Services;
+using Services.Configuration;
+using Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Repositories.
+// Repositories
 builder.Services
     .AddTransient<INodesetRepository, MemoryNodesetRepository>()
     .AddTransient<INodeRepository, MemoryNodeRepository>();
@@ -19,14 +22,17 @@ builder.Services
     .AddTransient<INodeHandler, NodeHandler>()
     .AddTransient<IPathHandler, PathHandler>();
 
-// Exception Interceptor
-builder.Services.AddTransient<ExceptionFilter>();
-
 // Database
 builder.Services.AddSingleton<MemoryDatabase>();
 
 // Middleware
 builder.Services.AddTransient<RootMiddleware>();
+
+// Configuration
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddSingleton<IDiscordConfiguration, AppConfiguration>();
+
+builder.Services.AddHttpClient<IDiscordLog, DiscordLog>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

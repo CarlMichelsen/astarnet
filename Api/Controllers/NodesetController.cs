@@ -7,7 +7,6 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
-[ServiceFilter(typeof(ExceptionFilter))]
 public class NodesetController : ControllerBase
 {
     private readonly INodesetHandler nodesetHandler;
