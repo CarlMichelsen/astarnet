@@ -8,12 +8,16 @@ using Database.Repositories.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Repositories.
+builder.Services
+    .AddTransient<INodesetRepository, MemoryNodesetRepository>()
+    .AddTransient<INodeRepository, MemoryNodeRepository>();
+
+// Handlers
 builder.Services
     .AddTransient<INodesetHandler, NodesetHandler>()
     .AddTransient<INodeHandler, NodeHandler>()
-    .AddTransient<INodesetRepository, MemoryNodesetRepository>()
-    .AddTransient<INodeRepository, MemoryNodeRepository>();
+    .AddTransient<IPathHandler, PathHandler>();
 
 // Exception Interceptor
 builder.Services.AddTransient<ExceptionFilter>();

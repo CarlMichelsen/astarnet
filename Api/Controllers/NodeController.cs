@@ -16,10 +16,10 @@ public class NodeController : ControllerBase
         this.nodeHandler = nodeHandler;
     }
 
-    [HttpGet("/api/v1/[controller]/{nodeset}/{guid}")]
-    public async Task<ActionResult<ServiceResponse<NodeDto>>> GetNode([FromRoute] string nodeset, [FromRoute] string guid)
+    [HttpGet("/api/v1/[controller]/{nodeset}/{nodeGuid}")]
+    public async Task<ActionResult<ServiceResponse<NodeDto>>> GetNode([FromRoute] string nodeset, [FromRoute] string nodeGuid)
     {
-        var nodeResponse = await nodeHandler.GetNode(nodeset, guid);
+        var nodeResponse = await nodeHandler.GetNode(nodeset, nodeGuid);
         if (!nodeResponse.Ok) return NotFound(nodeResponse);
 
         return Ok(nodeResponse);
@@ -61,28 +61,28 @@ public class NodeController : ControllerBase
         return Ok(nodeResponse);
     }
 
-    [HttpDelete("/api/v1/[controller]/{nodeset}/{guid}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string guid)
+    [HttpDelete("/api/v1/[controller]/{nodeset}/{nodeGuid}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string nodeGuid)
     {
-        var nodeResponse = await nodeHandler.DeleteNode(nodeset, guid);
+        var nodeResponse = await nodeHandler.DeleteNode(nodeset, nodeGuid);
         if (!nodeResponse.Ok) return NotFound(nodeResponse);
 
         return Ok(nodeResponse);
     }
 
-    [HttpPut("/api/v1/[controller]/{nodeset}/{guid}/position")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string guid, [FromBody] IEnumerable<float> position)
+    [HttpPut("/api/v1/[controller]/{nodeset}/{nodeGuid}/position")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string nodeGuid, [FromBody] IEnumerable<float> position)
     {
-        var nodeResponse = await nodeHandler.EditNodePosition(nodeset, guid, position);
+        var nodeResponse = await nodeHandler.EditNodePosition(nodeset, nodeGuid, position);
         if (!nodeResponse.Ok) return NotFound(nodeResponse);
 
         return Ok(nodeResponse);
     }
 
-    [HttpPut("/api/v1/[controller]/{nodeset}/{guid}/links")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string guid, [FromBody] IEnumerable<string> links)
+    [HttpPut("/api/v1/[controller]/{nodeset}/{nodeGuid}/links")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNode([FromRoute] string nodeset, [FromRoute] string nodeGuid, [FromBody] IEnumerable<string> links)
     {
-        var nodeResponse = await nodeHandler.EditNodeLinks(nodeset, guid, links);
+        var nodeResponse = await nodeHandler.EditNodeLinks(nodeset, nodeGuid, links);
         if (!nodeResponse.Ok) return NotFound(nodeResponse);
 
         return Ok(nodeResponse);

@@ -16,17 +16,17 @@ public class NodesetController : ControllerBase
         this.nodesetHandler = nodesetHandler;
     }
 
-    [HttpPost("/api/v1/[controller]/{name}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> CreateNodeset([FromRoute] string name)
+    [HttpPost("/api/v1/[controller]/{nodeset}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> CreateNodeset([FromRoute] string nodeset)
     {
-        var nodesetResponse = await nodesetHandler.CreateNodeset(name);
+        var nodesetResponse = await nodesetHandler.CreateNodeset(nodeset);
         return nodesetResponse.Ok ? Ok(nodesetResponse) : BadRequest(nodesetResponse);
     }
 
-    [HttpGet("/api/v1/[controller]/{name}")]
-    public async Task<ActionResult<ServiceResponse<NodesetDto>>> GetNodeset([FromRoute] string name)
+    [HttpGet("/api/v1/[controller]/{nodeset}")]
+    public async Task<ActionResult<ServiceResponse<NodesetDto>>> GetNodeset([FromRoute] string nodeset)
     {
-        var nodesetResponse = await nodesetHandler.GetNodeset(name);
+        var nodesetResponse = await nodesetHandler.GetNodeset(nodeset);
         return nodesetResponse.Ok ? Ok(nodesetResponse) : NotFound(nodesetResponse);
     }
 
@@ -37,17 +37,17 @@ public class NodesetController : ControllerBase
         return Ok(nodesetResponse);
     }
 
-    [HttpPut("/api/v1/[controller]/{name}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> PutNodeset([FromRoute] string name, [FromBody] string newName)
+    [HttpPut("/api/v1/[controller]/{nodeset}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> PutNodeset([FromRoute] string nodeset, [FromBody] string newName)
     {
-        var nodesetResponse = await nodesetHandler.EditNodeset(name, newName);
+        var nodesetResponse = await nodesetHandler.EditNodeset(nodeset, newName);
         return Ok(nodesetResponse);
     }
 
-    [HttpDelete("/api/v1/[controller]/{name}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNodeset([FromRoute] string name)
+    [HttpDelete("/api/v1/[controller]/{nodeset}")]
+    public async Task<ActionResult<ServiceResponse<bool>>> DeleteNodeset([FromRoute] string nodeset)
     {
-        var nodesetResponse = await nodesetHandler.DeleteNodeset(name);
+        var nodesetResponse = await nodesetHandler.DeleteNodeset(nodeset);
         return Ok(nodesetResponse);
     }
 }
