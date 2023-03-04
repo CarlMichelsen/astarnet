@@ -16,7 +16,7 @@ public class DiscordLog : IDiscordLog
         this.config = config;
     }
 
-    public async Task LogToDiscord(string identifier, string logMessage, string detailedLogMessage = "")
+    public async Task LogToDiscord(Guid identifier, string logMessage, string? detailedLogMessage)
     {
         Dictionary<string, string> message = new()
         {
@@ -33,7 +33,7 @@ public class DiscordLog : IDiscordLog
         res.EnsureSuccessStatusCode();
     }
 
-    private static string FormatDiscordMessage(string identifier, string logMessage, string detailedLogMessage)
+    private static string FormatDiscordMessage(Guid identifier, string logMessage, string? detailedLogMessage)
     {
         var formattedMessage = string.Empty;
         if (!string.IsNullOrWhiteSpace(detailedLogMessage)) formattedMessage = $"\n```{detailedLogMessage}```";

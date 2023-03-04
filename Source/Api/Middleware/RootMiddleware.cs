@@ -18,14 +18,24 @@ public class RootMiddleware : IMiddleware
         var identifier = Guid.NewGuid();
         try
         {
+            logger.LogInformation(
+                "<{identifier}> [{method}] {path}",
+                identifier,
+                context.Request.Method,
+                context.Request.Path
+            );
             context.TraceIdentifier = identifier.ToString();
-            logger.LogInformation("<{identifier}> [{method}] {path}", identifier, context.Request.Method, context.Request.Path);
             await next(context);
         }
         catch (Exception ex)
         {
             logger.LogCritical("<{identifier}> {exception}", identifier, ex);
-            await discordLog.LogToDiscord(identifier.ToString(), ex.Message, ex.InnerException?.ToString() ?? string.Empty);
+            var detailedExceptionMessage = ex.InnerException?.ToString();
+            await discordLog.LogToDiscord(
+                identifier,
+                ex.Message,
+                detailedExceptionMessage
+            );
         }
     }
 }
