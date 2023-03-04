@@ -16,7 +16,7 @@ public class PathController : ControllerBase
         this.pathHandler = pathHandler;
     }
 
-    [HttpPost("/api/v1/[controller]/{nodeset}")]
+    [HttpPost("{nodeset}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<NodeDto>>>> GetNode([FromRoute] string nodeset, [FromBody] PathRequestDto pathRequest)
     {
         var nodeResponse = await pathHandler.CalculatePath(nodeset, pathRequest);
