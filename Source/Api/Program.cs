@@ -2,6 +2,8 @@ using Api.Configuration;
 using Api.Handlers;
 using Api.Handlers.Interface;
 using Api.Middleware;
+using BusinessLogic.Calculators;
+using BusinessLogic.Calculators.Interface;
 using Database;
 using Database.Repositories;
 using Database.Repositories.Interface;
@@ -27,6 +29,10 @@ builder.Services.AddSingleton<MemoryDatabase>();
 
 // Middleware
 builder.Services.AddTransient<RootMiddleware>();
+
+// Calculators
+builder.Services
+    .AddTransient<IPathCalculator, PathCalculator>();
 
 // Configuration
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);

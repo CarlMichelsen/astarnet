@@ -67,6 +67,7 @@ public class MemoryNodeRepository : INodeRepository
         {
             node!.Position = position;
             node!.Links = links.ToList();
+            await MatchLinks(nodesetName, guid, node!.Links);
         }
         return foundNode;
     }
@@ -78,7 +79,11 @@ public class MemoryNodeRepository : INodeRepository
         if (!found) return false;
 
         var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
-        if (foundNode) node!.Links = links.ToList();
+        if (foundNode)
+        {
+            node!.Links = links.ToList();
+            await MatchLinks(nodesetName, guid, node!.Links);
+        }
         return foundNode;
     }
 
@@ -93,9 +98,12 @@ public class MemoryNodeRepository : INodeRepository
         return foundNode;
     }
 
-    public Task<IEnumerable<Node>> GetAllNodes(string nodesetName)
+    public async Task<IEnumerable<Node>> GetAllNodes(string nodesetName)
     {
-        throw new NotImplementedException();
+        await Task.Delay(50); // Pretend to do work :)
+        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!found) return new List<Node>();
+        return nodeset!.Nodes.Values.ToList();
     }
 
     public async Task<Node?> GetNode(string nodesetName, Guid guid)
@@ -120,5 +128,28 @@ public class MemoryNodeRepository : INodeRepository
             if (foundNode) nodes.Add(node!);
         }
         return nodes;
+    }
+
+    private async Task<IEnumerable<Guid>> MatchLinks(string nodesetName, Guid current, IEnumerable<Guid> links)
+    {
+        await Task.Delay(50); // Pretend to do work :)
+        var affectedNodes = new List<Guid>();
+        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!foundNodeset) return affectedNodes;
+
+        foreach (var link in links)
+        {
+            var foundNode = nodeset!.Nodes.TryGetValue(link, out Node? node);
+            if (foundNode)
+            {
+                if (!node!.Links.Contains(current))
+                {
+                    node!.Links.Add(current);
+                    affectedNodes.Add(link);
+                }
+            }
+        }
+
+        return affectedNodes;
     }
 }
