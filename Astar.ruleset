@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="AstarRules" Description="Custom rules for my solution" ToolsVersion="16.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1200" Action="None" /> <!-- Allow 'using' directives inside namespace -->
+    <Rule Id="SA1633" Action="None" /> <!-- Allow files without header -->
+  </Rules>
+</RuleSet>

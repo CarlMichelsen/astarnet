@@ -41,6 +41,7 @@ builder.Services.AddSingleton<IDiscordConfiguration, AppConfiguration>();
 builder.Services.AddHttpClient<IDiscordLog, DiscordLog>();
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -55,8 +56,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RootMiddleware>();
-
-//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
