@@ -24,5 +24,5 @@ public interface IPathCalculator
     /// <param name="h">HeuristicDistanceToGoal delegate function.</param>
     /// <param name="cancellationToken">Allows cancellation of calculation.</param>
     /// <returns>LinkedList of Guid node identifiers. That defines the shortest path from start to goal.</returns>
-    public Task<LinkedList<Guid>> Calculate(Nodeset nodes, Guid start, Guid goal, HeuristicDistance h, CancellationToken cancellationToken);
+    Task<LinkedList<Guid>> Calculate(Nodeset nodes, Guid start, Guid goal, HeuristicDistance h, CancellationToken cancellationToken);
 }
