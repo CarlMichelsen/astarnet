@@ -16,19 +16,17 @@ public class PathCalculator : IPathCalculator
     /// <param name="nodes">Nodeset to do calculations in.</param>
     /// <param name="start">Start node Guid.</param>
     /// <param name="goal">End node Guid.</param>
-    /// <param name="h">HeuristicDistanceToGoal delegate function.</param>
-    /// <param name="d">HeuristicDistance (to neighbor) delegate function.</param>
+    /// <param name="h">HeuristicDistance (to neighbor) delegate function.</param>
     /// <param name="cancellationToken">Allows cancellation of calculation.</param>
     /// <returns>LinkedList of Guid node identifiers. That defines the shortest path from start to goal.</returns>
     public async Task<LinkedList<Guid>> Calculate(
         Nodeset nodes,
         Guid start,
         Guid goal,
-        IPathCalculator.HeuristicDistanceToGoal h,
-        IPathCalculator.HeuristicDistance d,
+        IPathCalculator.HeuristicDistance h,
         CancellationToken cancellationToken = default)
     {
-        return await Task.Run(() => CalculateSync(nodes, start, goal, h, d, cancellationToken));
+        return await Task.Run(() => CalculateSync(nodes, start, goal, h, cancellationToken));
     }
 
     /// <summary>
@@ -37,16 +35,14 @@ public class PathCalculator : IPathCalculator
     /// <param name="nodes">Nodeset to do calculations in.</param>
     /// <param name="start">Start node Guid.</param>
     /// <param name="goal">End node Guid.</param>
-    /// <param name="h">HeuristicDistanceToGoal delegate function.</param>
-    /// <param name="d">HeuristicDistance (to neighbor) delegate function.</param>
+    /// <param name="h">HeuristicDistance (to neighbor) delegate function.</param>
     /// <param name="cancellationToken">Allows cancellation of calculation.</param>
     /// <returns>LinkedList of Guid node identifiers. That defines the shortest path from start to goal.</returns>
     private static LinkedList<Guid> CalculateSync(
         Nodeset nodes,
         Guid start,
         Guid goal,
-        IPathCalculator.HeuristicDistanceToGoal h,
-        IPathCalculator.HeuristicDistance d,
+        IPathCalculator.HeuristicDistance h,
         CancellationToken cancellationToken)
     {
         var goalNode = nodes.GetNode(goal);
@@ -85,7 +81,7 @@ public class PathCalculator : IPathCalculator
             var currentNode = nodes.GetNode(current);
             foreach (var neighborNode in currentNode.Links.Select(nodes.GetNode))
             {
-                var tentativeGScore = DefaultInfinityGet(gScoreMap, current) + d(currentNode, neighborNode);
+                var tentativeGScore = DefaultInfinityGet(gScoreMap, current) + h(currentNode, neighborNode);
 
                 if (tentativeGScore < DefaultInfinityGet(gScoreMap, neighborNode.Id))
                 {

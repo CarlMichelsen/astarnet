@@ -48,8 +48,7 @@ public class PathHandler : IPathHandler
             nodesetObj,
             pathRequest.StartNodeGuid,
             pathRequest.EndNodeGuid,
-            BasicHeuristics.BasicDistanceToGoal,
-            BasicHeuristics.BasicDistance,
+            BasicHeuristics.DistanceEstimation,
             CancellationToken.None);
 
         return new ServiceResponse<IEnumerable<NodeDto>>

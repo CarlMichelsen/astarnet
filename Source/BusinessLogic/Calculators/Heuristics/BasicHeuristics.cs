@@ -12,17 +12,8 @@ public static class BasicHeuristics
     /// Gets distance from a node to goal.
     /// </summary>
     /// <returns>Distance as a float.</returns>
-    public static IPathCalculator.HeuristicDistanceToGoal BasicDistanceToGoal => (Node node, Node goal) =>
+    public static IPathCalculator.HeuristicDistance DistanceEstimation => (Node node, Node otherNode) =>
     {
-        return node.Position.DistanceTo(goal.Position);
-    };
-
-    /// <summary>
-    /// Gets distance from a node to its' neighbor.
-    /// </summary>
-    /// <returns>Distance as a float.</returns>
-    public static IPathCalculator.HeuristicDistance BasicDistance => (Node currentNode, Node neighborNode) =>
-    {
-        return BasicDistanceToGoal(currentNode, neighborNode);
+        return node.Position.DistanceTo(otherNode.Position);
     };
 }
