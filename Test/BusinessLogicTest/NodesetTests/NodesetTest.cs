@@ -1,7 +1,7 @@
-using BusinessLogic.Calculators.Interface;
-using Test.BusinessLogicTest.Testdata;
+using Astar.BusinessLogic.Calculators.Interface;
+using Astar.BusinessLogicTest.Testdata;
 
-namespace Test.BusinessLogicTest.NodesetTests;
+namespace Astar.BusinessLogicTest.NodesetTests;
 
 public class NodesetTest
 {

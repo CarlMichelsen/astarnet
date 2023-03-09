@@ -1,9 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using Services.Configuration;
-using Services.Interface;
+using Astar.Services.Configuration;
+using Astar.Services.Interface;
 
-namespace Services;
+namespace Astar.Services;
 
 public class DiscordLog : IDiscordLog
 {

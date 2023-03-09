@@ -1,6 +1,6 @@
-using Services.Interface;
+using Astar.Services.Interface;
 
-namespace Api.Middleware;
+namespace Astar.Api.Middleware;
 
 /// <summary>
 /// The first middleware to be hit when an api-request is made.

@@ -1,7 +1,7 @@
-using Database.Entities;
-using Dto.Models;
+using Astar.Database.Entities;
+using Astar.Dto.Models;
 
-namespace BusinessLogic.Mappers;
+namespace Astar.BusinessLogic.Mappers;
 
 /// <summary>
 /// Mapper methods for nodes, nodesets and their Dto counterparts.

@@ -1,11 +1,11 @@
-using Api.Handlers.Interface;
-using BusinessLogic.Mappers;
-using Database.Entities;
-using Database.Repositories.Interface;
-using Dto;
-using Dto.Models;
+using Astar.Api.Handlers.Interface;
+using Astar.BusinessLogic.Mappers;
+using Astar.Database.Entities;
+using Astar.Database.Repositories.Interface;
+using Astar.Dto;
+using Astar.Dto.Models;
 
-namespace Api.Handlers;
+namespace Astar.Api.Handlers;
 
 /// <summary>
 /// A Handler for manipulating node data.

@@ -1,9 +1,9 @@
-using BusinessLogic.Calculators.Interface;
-using BusinessLogic.Exceptions;
-using BusinessLogic.Extensions;
-using Database.Entities;
+using Astar.BusinessLogic.Calculators.Interface;
+using Astar.BusinessLogic.Exceptions;
+using Astar.BusinessLogic.Extensions;
+using Astar.Database.Entities;
 
-namespace BusinessLogic.Calculators;
+namespace Astar.BusinessLogic.Calculators;
 
 /// <summary>
 /// Calculates the shortest possible path using A* with custom distance heuristic delegate functions.

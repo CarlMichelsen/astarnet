@@ -1,15 +1,15 @@
-using Api.Configuration;
-using Api.Handlers;
-using Api.Handlers.Interface;
-using Api.Middleware;
-using BusinessLogic.Calculators;
-using BusinessLogic.Calculators.Interface;
-using Database;
-using Database.Repositories;
-using Database.Repositories.Interface;
-using Services;
-using Services.Configuration;
-using Services.Interface;
+using Astar.Api.Configuration;
+using Astar.Api.Handlers;
+using Astar.Api.Handlers.Interface;
+using Astar.Api.Middleware;
+using Astar.BusinessLogic.Calculators;
+using Astar.BusinessLogic.Calculators.Interface;
+using Astar.Database;
+using Astar.Database.Repositories;
+using Astar.Database.Repositories.Interface;
+using Astar.Services;
+using Astar.Services.Configuration;
+using Astar.Services.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 

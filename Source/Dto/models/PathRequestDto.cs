@@ -1,4 +1,4 @@
-namespace Dto.Models;
+namespace Astar.Dto.Models;
 
 public struct PathRequestDto
 {

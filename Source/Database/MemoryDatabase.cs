@@ -1,6 +1,6 @@
-using Database.Entities;
+using Astar.Database.Entities;
 
-namespace Database;
+namespace Astar.Database;
 
 public class MemoryDatabase
 {

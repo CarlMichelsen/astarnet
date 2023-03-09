@@ -1,9 +1,9 @@
-using Api.Handlers.Interface;
-using Dto;
-using Dto.Models;
+using Astar.Api.Handlers.Interface;
+using Astar.Dto;
+using Astar.Dto.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Astar.Api.Controllers;
 
 /// <summary>
 /// A RESTful CRUD controller for manipulating nodes in nodesets.

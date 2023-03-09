@@ -1,4 +1,4 @@
-namespace Services.Interface;
+namespace Astar.Services.Interface;
 
 public interface IDiscordLog
 {

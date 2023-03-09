@@ -1,6 +1,6 @@
-using Database.Entities;
+using Astar.Database.Entities;
 
-namespace BusinessLogic.Extensions;
+namespace Astar.BusinessLogic.Extensions;
 
 /// <summary>
 /// Extensionmethods for Nodeset.

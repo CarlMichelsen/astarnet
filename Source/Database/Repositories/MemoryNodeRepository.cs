@@ -1,7 +1,7 @@
-using Database.Entities;
-using Database.Repositories.Interface;
+using Astar.Database.Entities;
+using Astar.Database.Repositories.Interface;
 
-namespace Database.Repositories;
+namespace Astar.Database.Repositories;
 
 public class MemoryNodeRepository : INodeRepository
 {
@@ -28,6 +28,11 @@ public class MemoryNodeRepository : INodeRepository
                 Position = node.Position,
                 Links = node.Links
             };
+            var success = await ValidateLinks(nodesetName, node!.Links);
+            if (!success) return added;
+
+            await HandleLinkDiff(nodesetName, newNode.Id, newNode.Links, new List<Guid>());
+
             var successfulAdd = nodeset!.Nodes.TryAdd(newNode.Id, newNode);
             if (successfulAdd) added.Add(newNode);
         }
@@ -39,6 +44,12 @@ public class MemoryNodeRepository : INodeRepository
         await Task.Delay(50); // Pretend to do work :)
         var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
         if (!found) return false;
+
+        await HandleLinkDiff(
+            nodesetName,
+            guid,
+            new List<Guid>(),
+            nodeset!.Nodes.GetValueOrDefault(guid)?.Links ?? new List<Guid>());
         return nodeset!.Nodes.Remove(guid);
     }
 
@@ -51,6 +62,11 @@ public class MemoryNodeRepository : INodeRepository
         var deleted = 0;
         foreach (var guid in guids)
         {
+            await HandleLinkDiff(
+                nodesetName,
+                guid,
+                new List<Guid>(),
+                nodeset!.Nodes.GetValueOrDefault(guid)?.Links ?? new List<Guid>());
             if (nodeset!.Nodes.Remove(guid)) deleted++;
         }
         return deleted;
@@ -65,9 +81,15 @@ public class MemoryNodeRepository : INodeRepository
         var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
         if (foundNode)
         {
+            var success = await ValidateLinks(nodesetName, node!.Links);
+            if (!success) return false;
+
+            var addedLinks = AddedLinks(node!.Links, links);
+            var removedLinks = RemovedLinks(node!.Links, links);
+            await HandleLinkDiff(nodesetName, guid, addedLinks, removedLinks);
+
             node!.Position = position;
             node!.Links = links.ToList();
-            await MatchLinks(nodesetName, guid, node!.Links);
         }
         return foundNode;
     }
@@ -81,8 +103,14 @@ public class MemoryNodeRepository : INodeRepository
         var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
         if (foundNode)
         {
+            var success = await ValidateLinks(nodesetName, node!.Links);
+            if (!success) return false;
+
+            var addedLinks = AddedLinks(node!.Links, links);
+            var removedLinks = RemovedLinks(node!.Links, links);
+            await HandleLinkDiff(nodesetName, guid, addedLinks, removedLinks);
+
             node!.Links = links.ToList();
-            await MatchLinks(nodesetName, guid, node!.Links);
         }
         return foundNode;
     }
@@ -130,26 +158,77 @@ public class MemoryNodeRepository : INodeRepository
         return nodes;
     }
 
-    private async Task<IEnumerable<Guid>> MatchLinks(string nodesetName, Guid current, IEnumerable<Guid> links)
+    private static IEnumerable<Guid> AddedLinks(IEnumerable<Guid> oldLinks, IEnumerable<Guid> newLinks)
     {
-        await Task.Delay(50); // Pretend to do work :)
-        var affectedNodes = new List<Guid>();
-        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!foundNodeset) return affectedNodes;
+        var added = new List<Guid>();
 
-        foreach (var link in links)
+        foreach (var link in newLinks)
         {
-            var foundNode = nodeset!.Nodes.TryGetValue(link, out Node? node);
-            if (foundNode)
+            if (!oldLinks.Contains(link))
             {
-                if (!node!.Links.Contains(current))
-                {
-                    node!.Links.Add(current);
-                    affectedNodes.Add(link);
-                }
+                added.Add(link);
             }
         }
 
-        return affectedNodes;
+        return added;
+    }
+
+    private static IEnumerable<Guid> RemovedLinks(IEnumerable<Guid> oldLinks, IEnumerable<Guid> newLinks)
+    {
+        var removed = new List<Guid>();
+
+        foreach (var link in oldLinks)
+        {
+            if (!newLinks.Contains(link))
+            {
+                removed.Add(link);
+            }
+        }
+
+        return removed;
+    }
+
+    private async Task<bool> ValidateLinks(string nodesetName, IEnumerable<Guid> links)
+    {
+        await Task.Delay(10); // Pretend to do work :)
+        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!foundNodeset) return false;
+
+        foreach (var link in links)
+        {
+            var found = nodeset!.Nodes.TryGetValue(link, out Node? _);
+            if (!found) return false;
+        }
+
+        return true;
+    }
+
+    private async Task HandleLinkDiff(string nodesetName, Guid current, IEnumerable<Guid> addedLinks, IEnumerable<Guid> removedLinks)
+    {
+        await Task.Delay(10); // Pretend to do work :)
+        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+        if (!foundNodeset) return;
+
+        foreach (var link in addedLinks)
+        {
+            var found = nodeset!.Nodes.TryGetValue(link, out Node? node);
+            if (!found)
+            {
+                continue;
+            }
+
+            node!.Links.Add(current);
+        }
+
+        foreach (var link in removedLinks)
+        {
+            var found = nodeset!.Nodes.TryGetValue(link, out Node? node);
+            if (!found)
+            {
+                continue;
+            }
+
+            node!.Links.Remove(current);
+        }
     }
 }

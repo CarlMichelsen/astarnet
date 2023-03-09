@@ -1,13 +1,13 @@
-using Api.Handlers.Interface;
-using BusinessLogic.Calculators.Heuristics;
-using BusinessLogic.Calculators.Interface;
-using BusinessLogic.Extensions;
-using BusinessLogic.Mappers;
-using Database.Repositories.Interface;
-using Dto;
-using Dto.Models;
+using Astar.Api.Handlers.Interface;
+using Astar.BusinessLogic.Calculators.Heuristics;
+using Astar.BusinessLogic.Calculators.Interface;
+using Astar.BusinessLogic.Extensions;
+using Astar.BusinessLogic.Mappers;
+using Astar.Database.Repositories.Interface;
+using Astar.Dto;
+using Astar.Dto.Models;
 
-namespace Api.Handlers;
+namespace Astar.Api.Handlers;
 
 /// <summary>
 /// A handler for doing path calculations.

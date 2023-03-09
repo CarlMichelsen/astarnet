@@ -1,6 +1,6 @@
-using Services.Configuration;
+using Astar.Services.Configuration;
 
-namespace Api.Configuration;
+namespace Astar.Api.Configuration;
 
 /// <summary>
 /// Configuration file for the Api and it's dependencies.

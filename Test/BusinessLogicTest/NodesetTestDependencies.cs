@@ -1,9 +1,9 @@
-using BusinessLogic.Calculators;
-using BusinessLogic.Calculators.Interface;
+using Astar.BusinessLogic.Calculators;
+using Astar.BusinessLogic.Calculators.Interface;
 using Microsoft.Extensions.DependencyInjection;
-using Test.BusinessLogicTest.Testdata;
+using Astar.BusinessLogicTest.Testdata;
 
-namespace Test.BusinessLogicTest;
+namespace Astar.BusinessLogicTest;
 
 public static class NodesetTestDependencies
 {

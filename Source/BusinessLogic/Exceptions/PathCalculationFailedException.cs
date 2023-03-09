@@ -1,4 +1,4 @@
-namespace BusinessLogic.Exceptions;
+namespace Astar.BusinessLogic.Exceptions;
 
 /// <summary>
 /// An exception for when a path calculation fails.

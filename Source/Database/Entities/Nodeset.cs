@@ -1,4 +1,4 @@
-namespace Database.Entities;
+namespace Astar.Database.Entities;
 
 public class Nodeset
 {

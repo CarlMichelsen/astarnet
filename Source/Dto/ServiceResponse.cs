@@ -1,4 +1,4 @@
-namespace Dto;
+namespace Astar.Dto;
 
 public class ServiceResponse<T>
 {

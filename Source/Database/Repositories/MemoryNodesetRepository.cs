@@ -1,7 +1,7 @@
-using Database.Entities;
-using Database.Repositories.Interface;
+using Astar.Database.Entities;
+using Astar.Database.Repositories.Interface;
 
-namespace Database.Repositories;
+namespace Astar.Database.Repositories;
 
 public class MemoryNodesetRepository : INodesetRepository
 {

@@ -1,6 +1,6 @@
-using Database.Entities;
+using Astar.Database.Entities;
 
-namespace BusinessLogic.Calculators.Interface;
+namespace Astar.BusinessLogic.Calculators.Interface;
 
 /// <summary>
 /// Interface for path calculators.

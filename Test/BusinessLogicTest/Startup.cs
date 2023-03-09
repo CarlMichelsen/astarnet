@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Test.BusinessLogicTest;
+namespace Astar.BusinessLogicTest;
 
 public class Startup
 {

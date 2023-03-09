@@ -1,6 +1,6 @@
-using Database.Entities;
+using Astar.Database.Entities;
 
-namespace Database.Repositories.Interface;
+namespace Astar.Database.Repositories.Interface;
 
 public interface INodeRepository
 {

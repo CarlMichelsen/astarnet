@@ -1,4 +1,4 @@
-namespace Services.Configuration;
+namespace Astar.Services.Configuration;
 
 public interface IDiscordConfiguration
 {

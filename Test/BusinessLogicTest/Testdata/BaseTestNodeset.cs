@@ -1,6 +1,6 @@
-using Database.Entities;
+using Astar.Database.Entities;
 
-namespace Test.BusinessLogicTest.Testdata;
+namespace Astar.BusinessLogicTest.Testdata;
 
 public abstract class BaseTestNodeset
 {

@@ -1,7 +1,7 @@
-using BusinessLogic.Calculators.Interface;
-using Database.Entities;
+using Astar.BusinessLogic.Calculators.Interface;
+using Astar.Database.Entities;
 
-namespace BusinessLogic.Calculators.Heuristics;
+namespace Astar.BusinessLogic.Calculators.Heuristics;
 
 /// <summary>
 /// Distance estimation methods for use in PathCalculator.

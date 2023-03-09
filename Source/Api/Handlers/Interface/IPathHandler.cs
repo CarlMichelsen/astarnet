@@ -1,7 +1,7 @@
-using Dto;
-using Dto.Models;
+using Astar.Dto;
+using Astar.Dto.Models;
 
-namespace Api.Handlers.Interface;
+namespace Astar.Api.Handlers.Interface;
 
 /// <summary>
 /// An interface for handling path calculations.
