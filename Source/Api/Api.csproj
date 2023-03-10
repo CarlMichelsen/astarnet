@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>$(SolutionDir)\Astar.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Astar.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

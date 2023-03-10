@@ -30,12 +30,7 @@ public class PathHandler : IPathHandler
         this.nodesetRepository = nodesetRepository;
     }
 
-    /// <summary>
-    /// Actually calculate a path from a PathRequestDto.
-    /// </summary>
-    /// <param name="nodeset">Name of the nodeset you want to calculate a path in.</param>
-    /// <param name="pathRequest">A Dto that contains information required to perform the path calculation.</param>
-    /// <returns>A list of NodeDto that defines a path according to the pathRequest.</returns>
+    /// <inheritdoc />
     public async Task<ServiceResponse<IEnumerable<NodeDto>>> CalculatePath(string nodeset, PathRequestDto pathRequest)
     {
         var nodesetObj = await this.nodesetRepository.GetNodeset(nodeset);

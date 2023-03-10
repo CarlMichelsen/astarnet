@@ -10,15 +10,7 @@ namespace Astar.BusinessLogic.Calculators;
 /// </summary>
 public class PathCalculator : IPathCalculator
 {
-    /// <summary>
-    /// Async wrapper for CalculateSync.
-    /// </summary>
-    /// <param name="nodes">Nodeset to do calculations in.</param>
-    /// <param name="start">Start node Guid.</param>
-    /// <param name="goal">End node Guid.</param>
-    /// <param name="h">HeuristicDistance (to neighbor) delegate function.</param>
-    /// <param name="cancellationToken">Allows cancellation of calculation.</param>
-    /// <returns>LinkedList of Guid node identifiers. That defines the shortest path from start to goal.</returns>
+    /// <inheritdoc />
     public async Task<LinkedList<Guid>> Calculate(
         Nodeset nodes,
         Guid start,

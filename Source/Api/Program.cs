@@ -1,3 +1,4 @@
+using System.Reflection;
 using Astar.Api.Configuration;
 using Astar.Api.Handlers;
 using Astar.Api.Handlers.Interface;
@@ -44,7 +45,25 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen((config) =>
+{
+    var currentAssembly = Assembly.GetExecutingAssembly();
+
+    var allAssemblies = new List<AssemblyName>(currentAssembly.GetReferencedAssemblies())
+    {
+        currentAssembly.GetName(),
+    };
+
+    foreach (var assembly in allAssemblies)
+    {
+        string xmlFile = $"{assembly.Name}.xml";
+        string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath))
+        {
+            config.IncludeXmlComments(xmlPath);
+        }
+    }
+});
 
 var app = builder.Build();
 
