@@ -44,11 +44,9 @@ public class RootMiddleware : IMiddleware
         catch (Exception ex)
         {
             this.logger.LogCritical("<{identifier}> {exception}", identifier, ex);
-            var detailedExceptionMessage = ex.InnerException?.ToString();
             await this.discordLog.LogToDiscord(
                 identifier,
-                ex.Message,
-                detailedExceptionMessage);
+                ex.Message);
         }
     }
 }
