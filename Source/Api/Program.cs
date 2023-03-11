@@ -6,6 +6,7 @@ using Astar.Api.Middleware;
 using Astar.BusinessLogic.Calculators;
 using Astar.BusinessLogic.Calculators.Interface;
 using Astar.Database;
+using Astar.Database.Configuration;
 using Astar.Database.Repositories;
 using Astar.Database.Repositories.Interface;
 using Astar.Services;
@@ -16,8 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Repositories
 builder.Services
-    .AddTransient<INodesetRepository, MemoryNodesetRepository>()
-    .AddTransient<INodeRepository, MemoryNodeRepository>();
+    .AddTransient<INodesetRepository, GraphNodesetRepository>()
+    .AddTransient<INodeRepository, GraphNodeRepository>();
 
 // Handlers
 builder.Services
@@ -26,7 +27,7 @@ builder.Services
     .AddTransient<IPathHandler, PathHandler>();
 
 // Database
-builder.Services.AddSingleton<MemoryDatabase>();
+// builder.Services.AddSingleton<MemoryDatabase>();
 
 // Middleware
 builder.Services.AddTransient<RootMiddleware>();
@@ -37,7 +38,8 @@ builder.Services.AddTransient<IPathCalculator, PathCalculator>();
 // Configuration
 builder.Services
     .AddSingleton<IConfiguration>(builder.Configuration)
-    .AddSingleton<IDiscordConfiguration, AppConfiguration>();
+    .AddSingleton<IDiscordConfiguration, AppConfiguration>()
+    .AddSingleton<IGraphDatabaseConfiguration, AppConfiguration>();
 
 // Logging
 builder.Services.AddHttpClient<IDiscordLog, DiscordLog>();

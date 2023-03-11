@@ -1,3 +1,4 @@
+using Astar.Database.Configuration;
 using Astar.Services.Configuration;
 
 namespace Astar.Api.Configuration;
@@ -5,7 +6,7 @@ namespace Astar.Api.Configuration;
 /// <summary>
 /// Configuration file for the Api and it's dependencies.
 /// </summary>
-public class AppConfiguration : IDiscordConfiguration
+public class AppConfiguration : IDiscordConfiguration, IGraphDatabaseConfiguration
 {
     private readonly IConfiguration configuration;
 
@@ -20,15 +21,18 @@ public class AppConfiguration : IDiscordConfiguration
         this.configuration = configuration;
     }
 
-    /// <summary>
-    /// Gets the WebhookUrl for discord logging.
-    /// </summary>
-    /// <returns>A string url.</returns>
+    /// <inheritdoc />
     public string WebhookUrl => this.configuration["Discord:WebhookUrl"] ?? throw new NullReferenceException();
 
-    /// <summary>
-    /// Gets the discordusername used for logging uncaught exceptions in a discord server.
-    /// </summary>
-    /// <returns>String username.</returns>
+    /// <inheritdoc />
     public string Username => this.configuration["Discord:Username"] ?? throw new NullReferenceException();
+
+    /// <inheritdoc />
+    public string Uri => this.configuration["Neo4j:Uri"] ?? throw new NullReferenceException();
+
+    /// <inheritdoc />
+    public string User => this.configuration["Neo4j:User"] ?? throw new NullReferenceException();
+
+    /// <inheritdoc />
+    public string Password => this.configuration["Neo4j:Password"] ?? throw new NullReferenceException();
 }

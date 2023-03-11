@@ -19,6 +19,7 @@ public class NodesetTest
     {
         Assert.Throws<NotImplementedException>(() => nodesetData.Set);
         Assert.Throws<NotImplementedException>(() => nodesetData.Path);
+        Assert.NotNull(pathCalculator);
     }
 
     [Fact]
