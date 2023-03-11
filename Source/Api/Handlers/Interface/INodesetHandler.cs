@@ -27,7 +27,7 @@ public interface INodesetHandler
     /// Get ALL nodesets.
     /// </summary>
     /// <returns>A ServiceResponse that contains a list of NodesetDto if the request was succesful.</returns>
-    Task<ServiceResponse<IEnumerable<NodesetDto>>> GetAllNodesets();
+    Task<ServiceResponse<IEnumerable<string>>> GetAllNodesets();
 
     /// <summary>
     /// Edit a nodeset (only name editing for now).

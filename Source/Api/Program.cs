@@ -32,13 +32,14 @@ builder.Services.AddSingleton<MemoryDatabase>();
 builder.Services.AddTransient<RootMiddleware>();
 
 // Calculators
-builder.Services
-    .AddTransient<IPathCalculator, PathCalculator>();
+builder.Services.AddTransient<IPathCalculator, PathCalculator>();
 
 // Configuration
-builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<IDiscordConfiguration, AppConfiguration>();
+builder.Services
+    .AddSingleton<IConfiguration>(builder.Configuration)
+    .AddSingleton<IDiscordConfiguration, AppConfiguration>();
 
+// Logging
 builder.Services.AddHttpClient<IDiscordLog, DiscordLog>();
 
 builder.Services.AddControllers();

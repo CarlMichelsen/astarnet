@@ -3,232 +3,201 @@ using Astar.Database.Repositories.Interface;
 
 namespace Astar.Database.Repositories;
 
+/// <summary>
+/// Implementation of INodeRepository.
+/// </summary>
 public class MemoryNodeRepository : INodeRepository
 {
     private readonly MemoryDatabase database;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MemoryNodeRepository"/> class.
+    /// </summary>
+    /// <param name="database">In-memory database for testing.</param>
     public MemoryNodeRepository(MemoryDatabase database)
     {
         this.database = database;
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<Node>> CreateNodes(string nodesetName, IEnumerable<Node> nodes)
     {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-
-        var added = new List<Node>();
-        if (!found) return added;
-
-        foreach (var node in nodes)
+        await Task.Delay(10); // Pretend to do work.
+        lock (this.database.Data)
         {
-            var newNode = new Node
+            var list = new List<Node>();
+            var foundNodeset = this.database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+            if (!foundNodeset)
             {
-                Id = node.Id == Guid.Empty ? Guid.NewGuid() : node.Id,
-                Position = node.Position,
-                Links = node.Links
-            };
-            var success = await ValidateLinks(nodesetName, node!.Links);
-            if (!success) return added;
+                return list;
+            }
 
-            await HandleLinkDiff(nodesetName, newNode.Id, newNode.Links, new List<Guid>());
+            var addedNodes = new List<Node>();
+            var addedMap = new Dictionary<Guid, Guid>();
+            foreach (var node in nodes)
+            {
+                var added = nodeset!.Nodes.TryAdd(node.Id, node);
+                if (!added)
+                {
+                    continue;
+                }
 
-            var successfulAdd = nodeset!.Nodes.TryAdd(newNode.Id, newNode);
-            if (successfulAdd) added.Add(newNode);
+                var links = node.Links.ToDictionary(x => node.Id, x => x);
+                addedMap = addedMap.Union(links).ToDictionary(x => x.Key, x => x.Value);
+                addedNodes.Add(node);
+            }
+
+            RegisterAddedLinks(nodeset!, addedMap);
+
+            return addedNodes;
         }
-        return added;
     }
 
-    public async Task<bool> DeleteNode(string nodesetName, Guid guid)
+    /// <inheritdoc />
+    public async Task<IEnumerable<Node>> EditNodes(string nodesetName, IEnumerable<Node> nodes)
     {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return false;
-
-        await HandleLinkDiff(
-            nodesetName,
-            guid,
-            new List<Guid>(),
-            nodeset!.Nodes.GetValueOrDefault(guid)?.Links ?? new List<Guid>());
-        return nodeset!.Nodes.Remove(guid);
-    }
-
-    public async Task<int> DeleteNodes(string nodesetName, IEnumerable<Guid> guids)
-    {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return 0;
-
-        var deleted = 0;
-        foreach (var guid in guids)
+        await Task.Delay(10); // Pretend to do work.
+        lock (this.database.Data)
         {
-            await HandleLinkDiff(
-                nodesetName,
-                guid,
-                new List<Guid>(),
-                nodeset!.Nodes.GetValueOrDefault(guid)?.Links ?? new List<Guid>());
-            if (nodeset!.Nodes.Remove(guid)) deleted++;
+            var list = new List<Node>();
+            var foundNodeset = this.database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+            if (!foundNodeset)
+            {
+                return list;
+            }
+
+            var editedNodes = new List<Node>();
+            var addedMap = new Dictionary<Guid, Guid>();
+            var removedMap = new Dictionary<Guid, Guid>();
+            foreach (var node in nodes)
+            {
+                var found = nodeset!.Nodes.TryGetValue(node.Id, out Node? exsistingNode);
+                if (!found)
+                {
+                    continue;
+                }
+
+                var added = node.Links
+                    .Where(l => !exsistingNode!.Links.Contains(l))
+                    .ToDictionary(x => node.Id, x => x);
+                addedMap = addedMap.Union(added)
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+                var removed = exsistingNode!.Links
+                    .Where(l => !node.Links.Contains(l))
+                    .ToDictionary(x => node.Id, x => x);
+                removedMap = removedMap.Union(removed)
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+                exsistingNode.Links = node.Links;
+                exsistingNode.Position = node.Position;
+                editedNodes.Add(node);
+            }
+
+            RegisterAddedLinks(nodeset!, addedMap);
+            RegisterRemovedLinks(nodeset!, removedMap);
+
+            return editedNodes;
         }
-        return deleted;
     }
 
-    public async Task<bool> EditNode(string nodesetName, Guid guid, Vector position, IEnumerable<Guid> links)
+    /// <inheritdoc />
+    public async Task<IEnumerable<Node>> DeleteNodes(string nodesetName, IEnumerable<Guid> guids)
     {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return false;
-
-        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
-        if (foundNode)
+        await Task.Delay(10); // Pretend to do work.
+        lock (this.database.Data)
         {
-            var success = await ValidateLinks(nodesetName, node!.Links);
-            if (!success) return false;
+            var list = new List<Node>();
+            var foundNodeset = this.database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+            if (!foundNodeset)
+            {
+                return list;
+            }
 
-            var addedLinks = AddedLinks(node!.Links, links);
-            var removedLinks = RemovedLinks(node!.Links, links);
-            await HandleLinkDiff(nodesetName, guid, addedLinks, removedLinks);
+            var deletedNodes = new List<Node>();
+            var removedMap = new Dictionary<Guid, Guid>();
+            foreach (var guid in guids)
+            {
+                var found = nodeset!.Nodes.TryGetValue(guid, out Node? exsistingNode);
+                if (!found)
+                {
+                    continue;
+                }
 
-            node!.Position = position;
-            node!.Links = links.ToList();
+                var successfulremove = nodeset!.Nodes.Remove(guid);
+                if (!successfulremove)
+                {
+                    continue;
+                }
+
+                var removed = exsistingNode!.Links
+                    .ToDictionary(x => exsistingNode.Id, x => x);
+                removedMap = removedMap.Union(removed)
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+                deletedNodes.Add(exsistingNode);
+            }
+
+            RegisterRemovedLinks(nodeset!, removedMap);
+
+            return deletedNodes;
         }
-        return foundNode;
     }
 
-    public async Task<bool> EditNodeLinks(string nodesetName, Guid guid, IEnumerable<Guid> links)
-    {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return false;
-
-        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
-        if (foundNode)
-        {
-            var success = await ValidateLinks(nodesetName, node!.Links);
-            if (!success) return false;
-
-            var addedLinks = AddedLinks(node!.Links, links);
-            var removedLinks = RemovedLinks(node!.Links, links);
-            await HandleLinkDiff(nodesetName, guid, addedLinks, removedLinks);
-
-            node!.Links = links.ToList();
-        }
-        return foundNode;
-    }
-
-    public async Task<bool> EditNodePosition(string nodesetName, Guid guid, Vector position)
-    {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return false;
-
-        var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
-        if (foundNode) node!.Position = position;
-        return foundNode;
-    }
-
-    public async Task<IEnumerable<Node>> GetAllNodes(string nodesetName)
-    {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return new List<Node>();
-        return nodeset!.Nodes.Values.ToList();
-    }
-
-    public async Task<Node?> GetNode(string nodesetName, Guid guid)
-    {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!found) return default;
-
-        return nodeset!.Nodes.GetValueOrDefault(guid);
-    }
-
+    /// <inheritdoc />
     public async Task<IEnumerable<Node>> GetNodes(string nodesetName, IEnumerable<Guid> guids)
     {
-        await Task.Delay(50); // Pretend to do work :)
-        var found = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        var nodes = new List<Node>();
-        if (!found) return nodes;
-
-        foreach (var guid in guids)
+        await Task.Delay(10); // Pretend to do work.
+        lock (this.database.Data)
         {
-            var foundNode = nodeset!.Nodes.TryGetValue(guid, out Node? node);
-            if (foundNode) nodes.Add(node!);
-        }
-        return nodes;
-    }
-
-    private static IEnumerable<Guid> AddedLinks(IEnumerable<Guid> oldLinks, IEnumerable<Guid> newLinks)
-    {
-        var added = new List<Guid>();
-
-        foreach (var link in newLinks)
-        {
-            if (!oldLinks.Contains(link))
+            var list = new List<Node>();
+            var foundNodeset = this.database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
+            if (!foundNodeset)
             {
-                added.Add(link);
+                return list;
             }
-        }
 
-        return added;
-    }
-
-    private static IEnumerable<Guid> RemovedLinks(IEnumerable<Guid> oldLinks, IEnumerable<Guid> newLinks)
-    {
-        var removed = new List<Guid>();
-
-        foreach (var link in oldLinks)
-        {
-            if (!newLinks.Contains(link))
+            var nodes = new List<Node>();
+            foreach (var guid in guids)
             {
-                removed.Add(link);
+                var found = nodeset!.Nodes.TryGetValue(guid, out Node? exsistingNode);
+                if (!found)
+                {
+                    continue;
+                }
+
+                nodes.Add(exsistingNode!);
             }
-        }
 
-        return removed;
+            return nodes;
+        }
     }
 
-    private async Task<bool> ValidateLinks(string nodesetName, IEnumerable<Guid> links)
+    private static void RegisterAddedLinks(Nodeset nodeset, Dictionary<Guid, Guid> fromToMap)
     {
-        await Task.Delay(10); // Pretend to do work :)
-        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!foundNodeset) return false;
-
-        foreach (var link in links)
+        foreach (var ft in fromToMap)
         {
-            var found = nodeset!.Nodes.TryGetValue(link, out Node? _);
-            if (!found) return false;
-        }
-
-        return true;
-    }
-
-    private async Task HandleLinkDiff(string nodesetName, Guid current, IEnumerable<Guid> addedLinks, IEnumerable<Guid> removedLinks)
-    {
-        await Task.Delay(10); // Pretend to do work :)
-        var foundNodeset = database.Data.TryGetValue(nodesetName, out Nodeset? nodeset);
-        if (!foundNodeset) return;
-
-        foreach (var link in addedLinks)
-        {
-            var found = nodeset!.Nodes.TryGetValue(link, out Node? node);
+            var found = nodeset.Nodes.TryGetValue(ft.Value, out Node? node);
             if (!found)
             {
                 continue;
             }
 
-            node!.Links.Add(current);
+            node!.Links.Add(ft.Key);
         }
+    }
 
-        foreach (var link in removedLinks)
+    private static void RegisterRemovedLinks(Nodeset nodeset, Dictionary<Guid, Guid> fromToMap)
+    {
+        foreach (var ft in fromToMap)
         {
-            var found = nodeset!.Nodes.TryGetValue(link, out Node? node);
+            var found = nodeset.Nodes.TryGetValue(ft.Value, out Node? node);
             if (!found)
             {
                 continue;
             }
 
-            node!.Links.Remove(current);
+            node!.Links.Remove(ft.Key);
         }
     }
 }

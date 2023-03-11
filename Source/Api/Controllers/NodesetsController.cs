@@ -52,7 +52,7 @@ public class NodesetsController : ControllerBase
     /// </summary>
     /// <returns>A ServiceResponse with a list of all nodesets.</returns>
     [HttpGet]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<NodesetDto>>>> GetAllNodesets()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<string>>>> GetAllNodesets()
     {
         var nodesetResponse = await this.nodesetHandler.GetAllNodesets();
         return this.Ok(nodesetResponse);

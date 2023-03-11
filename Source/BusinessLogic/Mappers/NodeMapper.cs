@@ -77,7 +77,7 @@ public static class NodeMapper
         {
             Id = node.Id == Guid.Empty ? Guid.NewGuid() : node.Id,
             Position = DtoToVector(node.Position),
-            Links = node.Links.ToList(),
+            Links = node.Links?.ToList() ?? new List<Guid>(),
         };
     }
 

@@ -1,4 +1,5 @@
 using Astar.BusinessLogic.Calculators.Interface;
+using Astar.BusinessLogic.Extensions;
 using Astar.Database.Entities;
 
 namespace Astar.BusinessLogic.Calculators.Heuristics;

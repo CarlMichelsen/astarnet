@@ -50,12 +50,12 @@ public class NodesetHandler : INodesetHandler
     }
 
     /// <inheritdoc />
-    public async Task<ServiceResponse<IEnumerable<NodesetDto>>> GetAllNodesets()
+    public async Task<ServiceResponse<IEnumerable<string>>> GetAllNodesets()
     {
         var nodesets = await this.nodesetRepository.GetAllNodesets();
-        return new ServiceResponse<IEnumerable<NodesetDto>>
+        return new ServiceResponse<IEnumerable<string>>
         {
-            Data = nodesets.Select(NodeMapper.NodesetToDto),
+            Data = nodesets,
         };
     }
 

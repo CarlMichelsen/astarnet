@@ -1,17 +1,26 @@
 namespace Astar.Database.Entities;
 
+/// <summary>
+/// Database entity that represents a Vector position.
+/// Can be found in a nodeset node.
+/// </summary>
 public class Vector
 {
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float Z { get; set; }
+    /// <summary>
+    /// Gets or sets the X component in the vector.
+    /// </summary>
+    /// <value>Float X vector component.</value>
+    required public float X { get; set; }
 
-    public float DistanceTo(Vector other)
-    {
-        var xDiff = other.X - X;
-        var yDiff = other.Y - Y;
-        var zDiff = other.Z - Z;
-        double distance = Math.Sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
-        return (float)distance;
-    }
+    /// <summary>
+    /// Gets or sets the Y component in the vector.
+    /// </summary>
+    /// <value>Float Y vector component.</value>
+    required public float Y { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Z component in the vector.
+    /// </summary>
+    /// <value>Float Z vector component.</value>
+    required public float Z { get; set; }
 }
